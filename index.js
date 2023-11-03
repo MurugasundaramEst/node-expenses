@@ -25,13 +25,13 @@ const writeFileData = async (project, module, content) => {
     }
 
     module += '.json';
-    await fs.writeFile(path.join(__dirname, project, module), content)
+    await fs.writeFile(path.join(__dirname, 'data', project, module), content)
     return false;
 }
 
 const readFileData = async (project, module) => {
     module += '.json';
-    const data = await fs.readFile(path.join(__dirname, project, module), 'utf8');
+    const data = await fs.readFile(path.join(__dirname, 'data', project, module), 'utf8');
     return data;
 }
 
