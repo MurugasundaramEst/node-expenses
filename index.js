@@ -39,7 +39,7 @@ app.get('/', (req, res) => {
     res.json({error: false, msg:'able to access api'})
 })
 
-app.post('/api/expense', async (req, res) => {
+app.post('/api/expense/save', async (req, res) => {
     let project = req.body.project;
     let module = req.body.module;
     let content = req.body.content;
@@ -48,7 +48,7 @@ app.post('/api/expense', async (req, res) => {
     res.json({error: false})
 })
 
-app.get('/api/expense', async (req, res) => {
+app.post('/api/expense/get', async (req, res) => {
     let project = req.body.project;
     let module = req.body.module;
 
