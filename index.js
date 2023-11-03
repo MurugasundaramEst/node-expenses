@@ -14,29 +14,24 @@ const corsOptions = {
       'Access-Control-Allow-Origin'
     ],
     optionsSuccessStatus: 200 
-  }
+}
   
 app.use(cors(corsOptions))
 app.use(express.json())
 
-const writeFileData = async (content) => {
+const writeFileData = async (project, module, content) => {
     if (typeof content === 'object') {
         content = JSON.stringify(content)
     }
 
-    //const __dirname = path.resolve()
-    
-    await fs.writeFile(path.join(__dirname, 'data', 'expense.json'), content)
-
+    module += '.json';
+    await fs.writeFile(path.join(__dirname, project, module), content)
     return false;
 }
 
-const readFileData = async () => {
-    
-    //const __dirname = path.resolve()
-    
-    const data = await fs.readFile(path.join(__dirname, 'data', 'expense.json'), 'utf8');
-
+const readFileData = async (project, module) => {
+    module += '.json';
+    const data = await fs.readFile(path.join(__dirname, project, module), 'utf8');
     return data;
 }
 
@@ -45,12 +40,19 @@ app.get('/', (req, res) => {
 })
 
 app.post('/api/expense', async (req, res) => {
-    let fileData = writeFileData(req.body.content)
+    let project = req.body.project;
+    let module = req.body.module;
+    let content = req.body.content;
+
+    let fileData = writeFileData(project, module, content)
     res.json({error: false})
 })
 
 app.get('/api/expense', async (req, res) => {
-    let fileData = await readFileData();
+    let project = req.body.project;
+    let module = req.body.module;
+
+    let fileData = await readFileData(project, module);
     res.json({error: false, data: JSON.parse(fileData)})
 })
 
