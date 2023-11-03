@@ -5,10 +5,16 @@ const cors = require('cors');
 
 const app = express();
 const PORT = 8001;
-const CROSS_ORIGIN = 'http://localhost:3000'
+const CROSS_ORIGIN = ['http://localhost:3000', 'https://event-expense-manage.web.app']
 
 const corsOptions = {
-    origin: CROSS_ORIGIN,
+    origin: function (origin, callback) {
+        if (CROSS_ORIGIN.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     allowedHeaders: [
       'Content-Type',
       'Access-Control-Allow-Origin'
