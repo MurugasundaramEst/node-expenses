@@ -1,7 +1,6 @@
-const express = require('express');
-const fs = require('fs/promises');
-const path = require('path');
-const cors = require('cors');
+import express from 'express';
+import cors from 'cors';
+import { listEvents, listFriends, addFriends, deleteFriends, addEvents, deleteEvents } from './controllers/appController.js';
 
 const app = express();
 const PORT = 8001;
@@ -25,42 +24,17 @@ const corsOptions = {
 app.use(cors(corsOptions))
 app.use(express.json())
 
-const writeFileData = async (project, module, content) => {
-    if (typeof content === 'object') {
-        content = JSON.stringify(content)
-    }
-
-    module += '.json';
-    await fs.writeFile(path.join(__dirname, 'data', project, module), content)
-    return false;
-}
-
-const readFileData = async (project, module) => {
-    module += '.json';
-    const data = await fs.readFile(path.join(__dirname, 'data', project, module), 'utf8');
-    return data;
-}
-
 app.get('/', (req, res) => {
     res.json({error: false, msg:'able to access api'})
 })
 
-app.post('/api/expense/save', async (req, res) => {
-    let project = req.body.project;
-    let module = req.body.module;
-    let content = req.body.content;
+app.get('/event/list', listEvents);
+app.post('/event/add', addEvents);
+app.post('/event/delete', deleteEvents);
 
-    let fileData = writeFileData(project, module, content)
-    res.json({error: false})
-})
-
-app.post('/api/expense/get', async (req, res) => {
-    let project = req.body.project;
-    let module = req.body.module;
-
-    let fileData = await readFileData(project, module);
-    res.json({error: false, data: JSON.parse(fileData)})
-})
+app.get('/friend/list', listFriends);
+app.post('/friend/add', addFriends);
+app.post('/friend/delete', deleteFriends);
 
 app.listen(PORT, () => {
     console.log(`App is Running on http://localhost:${PORT}`)
