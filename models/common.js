@@ -6,8 +6,9 @@ export const get = async (tableName) => {
 }
 
 export const insert = async (tableName, name) => {
-    const result = await query.bulkUpdate(`INSERT INTO ${tableName} (name) VALUES ?`, [[name]])
-    return result;
+    await query.bulkUpdate(`INSERT INTO ${tableName} (name) VALUES ?`, [[name]]);
+    const result =  await query.execute(`SELECT * FROM ${tableName} WHERE id = LAST_INSERT_ID()`);
+    return result[0];
 }
 
 export const deleteId = async (tableName, id) => {

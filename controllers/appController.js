@@ -26,7 +26,7 @@ export const addEvents = async(req, res) => {
         return;
     }
 
-    const data = db.insert('events', req.body.name);
+    const data = await db.insert('events', req.body.name);
     res.json({ error: false, data: data });
 }
 
@@ -45,7 +45,7 @@ export const deleteEvents = async(req, res) => {
         res.json({error: true});
         return;
     }
-    
+
     const data = db.deleteId('events', req.body.id);
     res.json({ error: false, data: data });
 }
