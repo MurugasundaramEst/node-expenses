@@ -1,7 +1,7 @@
 import * as query from './query.js';
 
 export const get = async (tableName) => {
-    const result = await query.execute(`Select * from ${tableName}`);
+    const result = await query.execute(`Select * from ${tableName} order by id desc`);
     return result;
 }
 
