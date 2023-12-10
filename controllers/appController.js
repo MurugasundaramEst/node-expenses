@@ -1,12 +1,12 @@
 import * as db from '../models/common.js';
 
 export const listEvents = async (req, res) => {
-    const allEvents = await db.get('events');
+    const allEvents = await db.get('events', 'desc');
     res.json({ error: false, events: allEvents });
 }
 
 export const listFriends = async (req, res) => {
-    const allFrnds = await db.get('friends');
+    const allFrnds = await db.get('friends', 'asc');
     res.json({ error: false, friends: allFrnds });
 }
 
@@ -16,7 +16,7 @@ export const addFriends = async(req, res) => {
         return;
     }
 
-    const data = db.insert('friends', req.body.name);
+    const data = await db.insert('friends', req.body.name);
     res.json({ error: false, data: data });
 }
 
