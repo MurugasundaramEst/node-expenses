@@ -1,6 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import { listEvents, listFriends, addFriends, deleteFriends, addEvents, deleteEvents } from './controllers/appController.js';
+import { listEvents, listFriends, addFriends, 
+    deleteFriends, addEvents, deleteEvents,
+    saveManageEvents, getManageEvents
+} from './controllers/appController.js';
 
 const app = express();
 const PORT = 8001;
@@ -35,6 +38,9 @@ app.post('/event/delete', deleteEvents);
 app.get('/friend/list', listFriends);
 app.post('/friend/add', addFriends);
 app.post('/friend/delete', deleteFriends);
+
+app.post('/get/events', getManageEvents)
+app.post('/save/events', saveManageEvents)
 
 app.listen(PORT, () => {
     console.log(`App is Running on http://localhost:${PORT}`)
