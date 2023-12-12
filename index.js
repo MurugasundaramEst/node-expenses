@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { listEvents, listFriends, addFriends, 
     deleteFriends, addEvents, deleteEvents,
-    saveManageEvents, getManageEvents
+    saveManageEvents, getManageEvents, deleteManageEvents
 } from './controllers/appController.js';
 
 const app = express();
@@ -41,6 +41,7 @@ app.post('/friend/delete', deleteFriends);
 
 app.post('/get/events', getManageEvents)
 app.post('/save/events', saveManageEvents)
+app.post('/delete/events', deleteManageEvents)
 
 app.listen(PORT, () => {
     console.log(`App is Running on http://localhost:${PORT}`)

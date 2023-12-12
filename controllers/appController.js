@@ -52,7 +52,12 @@ export const deleteEvents = async(req, res) => {
 }
 
 export const saveManageEvents = async (req, res) => {
-    if(!req.body.frnd_id || !req.body.event_id || !req.body.amount) {
+    if(!req.body.frnd_id || !req.body.event_id) {
+        res.json({ error: true });
+        return;
+    }
+
+    if(!req.body.is_exclude && !req.body.amount) {
         res.json({ error: true });
         return;
     }
@@ -64,7 +69,8 @@ export const saveManageEvents = async (req, res) => {
         data.frnd_id,
         data.event_id,
         data.amount,
-        today
+        today,
+        data.is_exclude
     ]
 
     const result = await db.insertEventManage(dataObject);
@@ -72,7 +78,8 @@ export const saveManageEvents = async (req, res) => {
     let lastData = {
         date: moment(result.date).format('DD MMM'),
         frndId: result.frnd_id,
-        amount: result.amount
+        amount: result.amount,
+        isExclude: result.is_exclude
     }
 
     res.json({ error: false, data: lastData });
@@ -87,8 +94,11 @@ export const getManageEvents = async (req, res) => {
     const allFrnds = await db.get('friends', 'asc');
     const allData = await db.getEventManage(req.body.event_id);
 
+    let excludedData = allData.filter(x => x.is_exclude == true);
+    let nonExcludedData = allData.filter(x => x.is_exclude == false);
+
     let totalReceived = 0;
-    let received = allData.map(data => {
+    let received = nonExcludedData.map(data => {
         let frnd = allFrnds.filter(x => x.id == data.frnd_id);
         let frndName = frnd.length > 0 ? frnd[0].name : 'DELETED';
         
@@ -103,12 +113,41 @@ export const getManageEvents = async (req, res) => {
     });
 
     let receivedFrom = received.map(x => x.frndId);
-    let pending = allFrnds.filter(x => !receivedFrom.includes(x.id))
+    let excludedFrnd = excludedData.map(x => x.frnd_id);
+
+    let pending = [];
+    let excluded = [];
+
+    allFrnds.forEach(x => {
+        if(excludedFrnd.includes(x.id)) {
+            excluded.push(x)
+        } else if(!receivedFrom.includes(x.id)) {
+            pending.push(x)
+        }
+    });
 
     res.json({ 
         error: false, 
         received: received, 
         pending: pending,
-        totalReceived: totalReceived
+        totalReceived: totalReceived,
+        excluded: excluded
+    })
+}
+
+export const deleteManageEvents = async (req, res) => {
+    if(!req.body.event_id || !req.body.frnd_id || !req.body.frnd_name) {
+        res.json({ error: true });
+        return;
+    }
+
+    await db.deleteEventManage(req.body.frnd_id, req.body.event_id);
+
+    res.json({
+        error: false,
+        data: {
+            id: req.body.frnd_id,
+            name: req.body.frnd_name,
+        }
     })
 }
