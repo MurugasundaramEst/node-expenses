@@ -31,3 +31,9 @@ export const deleteEventManage = async (frndId, eventId) => {
     const result = await query.execute(`DELETE from manage_events where frnd_id = ${frndId} and event_id = ${eventId} and is_exclude = 1`)
     return result;
 }
+
+export const insertChats = async (values) => {
+    await query.bulkUpdate(`INSERT INTO chats (name, msg, date) VALUES ?`, [values]);
+    const result =  await query.execute(`SELECT * FROM chats order by id desc limit 1`);
+    return result[0];
+}

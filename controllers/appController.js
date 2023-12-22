@@ -1,5 +1,17 @@
 import * as db from '../models/common.js';
 import moment from 'moment/moment.js';
+import Pusher from 'pusher';
+import 'dotenv/config';
+
+const pusher = new Pusher({
+    appId: process.env.PUSHER_APP_ID,
+    key: process.env.PUSHER_APP_KEY,
+    secret: process.env.PUSHER_APP_SECRET,
+    cluster: process.env.PUSHER_APP_CLUSTER,
+    useTLS: true,
+});
+
+// pusher.trigger('events', 'new-event', { message: 'A new event was added' });
 
 export const listEvents = async (req, res) => {
     const allEvents = await db.get('events', 'desc');
@@ -150,4 +162,28 @@ export const deleteManageEvents = async (req, res) => {
             name: req.body.frnd_name,
         }
     })
+}
+
+export const addChats = async (req, res) => {
+    if(!req.body.name || !req.body.msg || !req.body.date) {
+        res.json({ error: true });
+        return;
+    }
+
+    let newChats = [
+        req.body.name,
+        req.body.msg,
+        req.body.date
+    ];
+
+    const response = await db.insertChats(newChats);
+
+    pusher.trigger('events', 'new-chat', { data: response });
+
+    res.json({error: false});
+}
+
+export const getChats = async (req, res) => {
+    const response = await db.get('chats', 'asc');
+    res.json({error: false, chats: response})
 }
